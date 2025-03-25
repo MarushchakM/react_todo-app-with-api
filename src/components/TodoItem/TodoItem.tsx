@@ -29,7 +29,7 @@ export const TodoItem: React.FC<Props> = ({
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, [error]);
+  }, [error, showInput]);
 
   const handleDelete = () => {
     changeId(id);
@@ -69,12 +69,13 @@ export const TodoItem: React.FC<Props> = ({
       return;
     }
 
+    setShowInput(false);
+
     changeTodo(
       { id, title: query.trim(), completed, userId: userId },
       onErrorUpdate,
     );
     changeId(id);
-    setShowInput(false);
   };
 
   const handleEscape = (e: React.KeyboardEvent<HTMLFormElement>) => {
