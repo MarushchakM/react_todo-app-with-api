@@ -6,27 +6,24 @@ import { Loader } from '../../types/Loader';
 
 type Props = {
   todo: Todo;
-  onTodo: (id: number[]) => void;
-  deleteId: boolean;
+  deleteTodo: (id: number) => void;
   changeTodo: (todo: Todo) => void;
   loader: Loader | null;
   error: boolean;
+  changeId: (id: number) => void;
 };
 
 export const TodoItem: React.FC<Props> = ({
   todo: { id, title, completed, userId },
-  onTodo,
-  deleteId,
+  deleteTodo,
   changeTodo,
   loader,
   error,
+  changeId,
 }) => {
-  const [isDeleting, setIsDeleting] = useState(false);
   const [showInput, setShowInput] = useState(false);
   const [query, setQuery] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // console.log(error);
 
   useEffect(() => {
     if (error) {
@@ -37,8 +34,8 @@ export const TodoItem: React.FC<Props> = ({
   }, [error]);
 
   const handleDelete = () => {
-    setIsDeleting(true);
-    onTodo([id]);
+    changeId(id);
+    deleteTodo(id);
   };
 
   const handleShowInput = () => {
@@ -50,40 +47,29 @@ export const TodoItem: React.FC<Props> = ({
     }, 0);
   };
 
-  // const handleHideInput = () => {
-  //   setShowInput(false);
-
-  //   if (query.length === 0) {
-  //     setIsDeleting(true);
-  //     onTodo([id]);
-
-  //     return;
-  //   }
-
-  //   changeTodo({ id, title: query.trim(), completed, userId: userId });
-  //   // setTimeout(() => {
-  //   setShowInput(false);
-  //   // }, 0);
-  // };
-
   const handleChangeTodo = (e: FormEvent) => {
     e.preventDefault();
+
+    if (query.trim() === title) {
+      setShowInput(false);
+
+      return;
+    }
 
     if (error) {
       return;
     }
 
     if (query.length === 0) {
-      setIsDeleting(true);
-      onTodo([id]);
+      deleteTodo(id);
+      changeId(id);
 
       return;
     }
 
     changeTodo({ id, title: query.trim(), completed, userId: userId });
-    // setTimeout(() => {
+    changeId(id);
     setShowInput(false);
-    // }, 0);
   };
 
   const handleEscape = (e: React.KeyboardEvent<HTMLFormElement>) => {
@@ -92,15 +78,8 @@ export const TodoItem: React.FC<Props> = ({
     }
   };
 
-  // const isLoading = (getLoader: Loader, mainId: number) => {
-  //   if (getLoader.id === mainId && loader?.loading) {
-  //     return true;
-  //   }
-
-  //   return false;
-  // };
-
   const handleChangeCompleted = () => {
+    changeId(id);
     changeTodo({ id, title, completed: !completed, userId: userId });
   };
 
@@ -158,7 +137,7 @@ export const TodoItem: React.FC<Props> = ({
       <div
         data-cy="TodoLoader"
         className={classNames('modal', 'overlay', {
-          'is-active': isDeleting || deleteId || loader?.loading,
+          'is-active': loader?.loading,
         })}
       >
         <div className="modal-background has-background-white-ter" />

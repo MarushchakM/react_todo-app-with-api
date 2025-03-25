@@ -9,6 +9,7 @@ type Props = {
   loader: Loader;
   error: string;
   changeCompleted: (todos: Todo) => void;
+  changeCompletedIds: (id: number[]) => void;
 };
 
 export const Header: React.FC<Props> = ({
@@ -17,6 +18,7 @@ export const Header: React.FC<Props> = ({
   loader,
   error,
   changeCompleted,
+  changeCompletedIds,
 }) => {
   const [query, setQuery] = useState('');
   const [toggleArrow, setToggleArrow] = useState(false);
@@ -44,9 +46,11 @@ export const Header: React.FC<Props> = ({
   };
 
   const handleChangeCompeted = () => {
-    const updateTodo = todos.filter(todo => todo.completed === toggleArrow);
+    const updateTodos = todos.filter(todo => todo.completed === toggleArrow);
 
-    updateMultiplyTodos(updateTodo);
+    changeCompletedIds(updateTodos.map(todo => todo.id));
+
+    updateMultiplyTodos(updateTodos);
   };
 
   useEffect(() => {

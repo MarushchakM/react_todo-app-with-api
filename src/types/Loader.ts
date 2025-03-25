@@ -1,4 +1,4 @@
 export interface Loader {
-  id: number;
+  id: number | number[];
   loading: boolean;
 }

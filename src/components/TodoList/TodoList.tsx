@@ -6,36 +6,41 @@ import { Loader } from '../../types/Loader';
 
 type Props = {
   todos: Todo[];
-  deleteTodo: (id: number[]) => void;
   tempTodo: Todo | null;
-  deletedIds: number[];
+  deleteTodo: (id: number) => void;
   changeTodo: (todo: Todo) => void;
   loader: Loader;
   error: boolean;
+  changeId: (id: number) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   deleteTodo,
   tempTodo,
-  deletedIds,
   changeTodo,
   loader,
   error,
+  changeId,
 }) => {
-  console.log(loader);
-
   return (
     <section className="todoapp__main" data-cy="TodoList">
       {todos?.map(todo => (
         <TodoItem
           key={todo.id}
           todo={todo}
-          onTodo={deleteTodo}
-          deleteId={deletedIds.includes(todo.id)}
+          deleteTodo={deleteTodo}
           changeTodo={changeTodo}
-          loader={todo.id === loader.id ? loader : null}
-          // loader={loader.find(el => el.id === todo.id)}
+          changeId={changeId}
+          loader={
+            typeof loader.id === 'number'
+              ? todo.id === loader.id
+                ? loader
+                : null
+              : loader.id.includes(todo.id)
+                ? loader
+                : null
+          }
           error={error}
         />
       ))}

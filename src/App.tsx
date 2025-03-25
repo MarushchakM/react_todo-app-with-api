@@ -21,7 +21,6 @@ export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[] | []>([]);
   const [filterData, setFilterData] = useState<Filter>(Filter.All);
   const [tempTodo, setTempoTodo] = useState<Todo | null>(null);
-  const [deletedIds, setDeletedIds] = useState<number[]>([]);
   const [loader, setLoader] = useState<Loader>({ id: 0, loading: false });
 
   useEffect(() => {
@@ -65,8 +64,11 @@ export const App: React.FC = () => {
       });
   };
 
+  const handleGetChangeId = (id: number[] | number) => {
+    setLoader({ id, loading: true });
+  };
+
   const handleUpdateTodo = (updatedTodo: Todo) => {
-    setLoader({ id: updatedTodo.id, loading: true });
     todoServices
       .updateTodo(updatedTodo)
       .then(todo => {
@@ -90,21 +92,18 @@ export const App: React.FC = () => {
       });
   };
 
-  const handleDeleteTodo = (todosId: number[]) => {
-    setDeletedIds(todosId);
-    todosId.map(todoId => {
-      todoServices
-        .deleteTodos(todoId)
-        .then(() => {
-          setTodos(currentTodos =>
-            currentTodos?.filter(todo => todo.id !== todoId),
-          );
-        })
-        .catch(() => {
-          setErrorMassage(ErrorMassages.UnableToDelete);
-        })
-        .finally(() => setDeletedIds([]));
-    });
+  const handleDeleteTodo = (todoId: number) => {
+    todoServices
+      .deleteTodos(todoId)
+      .then(() => {
+        setTodos(currentTodos =>
+          currentTodos?.filter(todo => todo.id !== todoId),
+        );
+      })
+      .catch(() => {
+        setErrorMassage(ErrorMassages.UnableToDelete);
+      })
+      .finally(() => setLoader({ id: 0, loading: false }));
   };
 
   const hideError = () => {
@@ -138,16 +137,17 @@ export const App: React.FC = () => {
           loader={loader}
           error={errorMassage}
           changeCompleted={handleUpdateTodo}
+          changeCompletedIds={handleGetChangeId}
         />
         {!!filteredTodos.length && (
           <TodoList
             todos={filteredTodos}
             deleteTodo={handleDeleteTodo}
             tempTodo={tempTodo}
-            deletedIds={deletedIds}
             changeTodo={handleUpdateTodo}
             loader={loader}
             error={errorMassage.length > 0}
+            changeId={handleGetChangeId}
           />
         )}
         {!!todos.length && (
@@ -155,6 +155,7 @@ export const App: React.FC = () => {
             filterData={handleFilterData}
             todos={todos}
             deleteTodos={handleDeleteTodo}
+            changeDeleteIds={handleGetChangeId}
           />
         )}
       </div>

@@ -10,10 +10,16 @@ import classNames from 'classnames';
 type Props = {
   filterData: (value: Filter) => void;
   todos: Todo[];
-  deleteTodos: (ids: number[]) => void;
+  deleteTodos: (id: number) => void;
+  changeDeleteIds: (id: number[]) => void;
 };
 
-export const Footer: React.FC<Props> = ({ filterData, todos, deleteTodos }) => {
+export const Footer: React.FC<Props> = ({
+  filterData,
+  todos,
+  deleteTodos,
+  changeDeleteIds,
+}) => {
   const [select, setSelect] = useState(Filter.All);
 
   const handleClick = (filter: Filter) => {
@@ -23,13 +29,17 @@ export const Footer: React.FC<Props> = ({ filterData, todos, deleteTodos }) => {
 
   const completedTodos = completedTodoId(todos);
 
+  const deleteMultiplyTodos = (deleteTodoIds: number[]) => {
+    changeDeleteIds(deleteTodoIds);
+    Promise.allSettled(deleteTodoIds.map(id => deleteTodos(id)));
+  };
+
   return (
     <footer className="todoapp__footer" data-cy="Footer">
       <span className="todo-count" data-cy="TodosCounter">
         {notCompletedTodoCounter(todos)} items left
       </span>
 
-      {/* Active link should have the 'selected' class */}
       <nav className="filter" data-cy="Filter">
         {Object.values(Filter).map(filterName => (
           <a
@@ -50,7 +60,7 @@ export const Footer: React.FC<Props> = ({ filterData, todos, deleteTodos }) => {
         type="button"
         className="todoapp__clear-completed"
         data-cy="ClearCompletedButton"
-        onClick={() => deleteTodos(completedTodos)}
+        onClick={() => deleteMultiplyTodos(completedTodos)}
         disabled={completedTodos.length === 0}
       >
         Clear completed
