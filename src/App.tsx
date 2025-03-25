@@ -68,7 +68,7 @@ export const App: React.FC = () => {
     setLoader({ id, loading: true });
   };
 
-  const handleUpdateTodo = (updatedTodo: Todo) => {
+  const handleUpdateTodo = (updatedTodo: Todo, onErrorCb?: VoidFunction) => {
     todoServices
       .updateTodo(updatedTodo)
       .then(todo => {
@@ -84,6 +84,10 @@ export const App: React.FC = () => {
         });
       })
       .catch(() => {
+        if (onErrorCb) {
+          onErrorCb();
+        }
+
         setErrorMassage(ErrorMassages.UnableToUpdate);
       })
       .finally(() => {
@@ -163,20 +167,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-// const onSuccessUpdate = () => {
-//   setShowInput(false)
-// }
-
-// chageTodos([{}], onSuccessUpdate)
-
-// const handleUpdateTodo => (updatedTodos: Todo[], onSuccessCb?: VoidFunction) => {
-
-// }
-
-// onSuccessUpdate?.()
-
-// const updateMulitplyTodos = () => {
-//   const updateTodos = [];
-
-//   Promise.allSettled(updateTodoIds.map((todo) => handleUpdateTodo({ ...todo, completed: !todo.completed })))
-// }

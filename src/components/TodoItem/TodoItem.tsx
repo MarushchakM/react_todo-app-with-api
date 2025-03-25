@@ -7,7 +7,7 @@ import { Loader } from '../../types/Loader';
 type Props = {
   todo: Todo;
   deleteTodo: (id: number) => void;
-  changeTodo: (todo: Todo) => void;
+  changeTodo: (todo: Todo, onSuccessUpdate?: () => void) => void;
   loader: Loader | null;
   error: boolean;
   changeId: (id: number) => void;
@@ -47,6 +47,10 @@ export const TodoItem: React.FC<Props> = ({
     }, 0);
   };
 
+  const onErrorUpdate = () => {
+    setShowInput(true);
+  };
+
   const handleChangeTodo = (e: FormEvent) => {
     e.preventDefault();
 
@@ -67,7 +71,10 @@ export const TodoItem: React.FC<Props> = ({
       return;
     }
 
-    changeTodo({ id, title: query.trim(), completed, userId: userId });
+    changeTodo(
+      { id, title: query.trim(), completed, userId: userId },
+      onErrorUpdate,
+    );
     changeId(id);
     setShowInput(false);
   };
