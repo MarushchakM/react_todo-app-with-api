@@ -26,10 +26,8 @@ export const TodoItem: React.FC<Props> = ({
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (error) {
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 0);
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   }, [error]);
 
